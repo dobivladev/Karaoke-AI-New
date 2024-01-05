@@ -1,20 +1,24 @@
 import torch
-import torch.utils.data as data
-import torch.nn.functional as F
+import torch.nn as nn
 import torchaudio
 import numpy as np
 import librosa
-from speech_decoding.processing import text_transform
+from text_processing.processing import text_transform
 
 def predict(model, file_name, device):
     model.eval()
-    valid_audio_transforms = torchaudio.transforms.MFCC(n_mfcc=128)
+
+    train_audio_transforms = nn.Sequential(
+        torchaudio.transforms.MelSpectrogram(sample_rate=22050, n_mels=128),
+        torchaudio.transforms.FrequencyMasking(freq_mask_param=15),
+        torchaudio.transforms.TimeMasking(time_mask_param=35)
+    )
     
     sampl = librosa.load(file_name, sr=22050)[0]
+    sampl = librosa.to_mono(sampl)
     sampl = sampl[np.newaxis, :]
-    sampl = torch.Tensor(sampl)
-    spectr = valid_audio_transforms(sampl).squeeze(0)
-    spectrogram_tensor = spectr.unsqueeze(0).unsqueeze(0)
+    sampl = torch.Tensor(sampl).squeeze(0)
+    spectrogram_tensor = train_audio_transforms(sampl).unsqueeze(0).unsqueeze(0)
     
     with torch.no_grad():
         spectrogram_tensor.to(device)
