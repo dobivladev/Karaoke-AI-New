@@ -16,6 +16,7 @@ def construct_subtitles(file, srt_path):
 
 
 def format_timestamp(milliseconds, always_include_hours = True):
+    # creates srt timestamps
     seconds = milliseconds // 1000
     assert seconds >= 0, "non-negative timestamp expected"
     milliseconds = round(seconds * 1000.0)
@@ -48,3 +49,12 @@ def create_emty_directory(dir_name):
     else:
         for x in os.listdir(dir_name):
             os.remove(os.path.join(dir_name, x))
+
+
+def write_to_srt(srt_file, text):
+    # writes text to a specified srt file
+    with open(srt_file) as f:
+        lines = f.readlines()
+    lines += ''.join(text) + "\n\n"
+    with open(srt_file, "w") as f:
+        f.writelines(lines)

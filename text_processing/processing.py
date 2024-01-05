@@ -181,6 +181,7 @@ def cer(reference, hypothesis, ignore_case=False, remove_space=False):
     cer = float(edit_distance) / ref_len
     return cer
 
+
 class TextTransform:
     """Maps characters to integers and vice versa"""
     def __init__(self):
@@ -221,7 +222,7 @@ class TextTransform:
             self.char_map[ch] = int(index)
             self.index_map[int(index)] = ch
         self.index_map[1] = ' '
-        print(self.index_map)
+        print(self.index_map) # these are the defined labels
 
     def text_to_int(self, text):
         """ Use a character map and convert text to an integer sequence """
@@ -247,6 +248,7 @@ train_audio_transforms = nn.Sequential(
     torchaudio.transforms.TimeMasking(time_mask_param=35)
 )
 
+# used for testing (or anything other than training)
 valid_audio_transforms = torchaudio.transforms.MelSpectrogram()
 
 text_transform = TextTransform()
